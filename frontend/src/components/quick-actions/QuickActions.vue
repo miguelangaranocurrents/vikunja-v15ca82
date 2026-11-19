@@ -610,14 +610,22 @@ function onEnter(event: KeyboardEvent) {
 }
 
 async function doCmd() {
-	if (results.value.length === 1 && results.value[0].items.length === 1) {
-		const result = results.value[0]
-		doAction(result.type, result.items[0])
+	// An active command takes precedence over the single-result shortcut below,
+	// otherwise a query matching exactly one project (e.g. "Groceries" for a new
+	// task) would navigate to that project instead of running the command.
+	if (selectedCmd.value === null) {
+		if (results.value.length === 1 && results.value[0].items.length === 1) {
+			const result = results.value[0]
+			doAction(result.type, result.items[0])
+			openTaskAfterCreate = false
+			return
+		}
+
 		openTaskAfterCreate = false
 		return
 	}
 
-	if (selectedCmd.value === null || query.value === '') {
+	if (query.value === '') {
 		openTaskAfterCreate = false
 		return
 	}

@@ -82,8 +82,12 @@ export const FILTER_OPERATORS_REGEX = '('+FILTER_OPERATORS.map(op => {
 	return needsWordBoundary ? '\\b' + escaped + '\\b' : escaped
 }).join('|')+')'
 
+// Word operators need word boundaries, otherwise a plain search term like "meeting"
+// contains "in" and gets treated as a filter expression.
+const FILTER_OPERATOR_PATTERN = new RegExp(FILTER_OPERATORS_REGEX)
+
 export function hasFilterQuery(filter: string): boolean {
-	return FILTER_OPERATORS.some(o => filter.includes(o))
+	return FILTER_OPERATOR_PATTERN.test(filter)
 }
 
 export function getFilterFieldRegexPattern(field: string): RegExp {
